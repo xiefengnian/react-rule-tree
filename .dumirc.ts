@@ -2,6 +2,8 @@ import { defineConfig } from 'dumi';
 
 export default defineConfig({
   outputPath: 'docs-dist',
+  base: '/react-rule-tree/',
+  publicPath: '/react-rule-tree/',
   themeConfig: {
     name: 'react-rule-tree',
     socialLinks: {
