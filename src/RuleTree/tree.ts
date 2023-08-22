@@ -297,7 +297,7 @@ export class Tree<D = any> {
       const { children } = initData;
       children?.forEach((childData: any) => {
         const isRelation = childData.hasOwnProperty('relation');
-        let childNode = null;
+        let childNode: any = null;
         if (isRelation) {
           const preserveData = _.omit(childData, ['relation', 'children']);
           const fieldData = _.pick(childData, ['relation']);

@@ -259,7 +259,7 @@ const RuleTree: React.FC<
   };
 
   const render = () => {
-    const result = [];
+    const result: React.ReactElement[] = [];
     const paths: React.ReactElement[] = [];
     let height: number = 0;
     /** render方法接受一系列的渲染函数，树结构将会连续调用这些渲染函数，形成流水线式的处理方法 */
