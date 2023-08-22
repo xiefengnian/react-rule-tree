@@ -75,7 +75,9 @@ export class Tree<D = any> {
     this.key += 1;
     return {
       data,
+      // @ts-ignore
       parent: undefined,
+      // @ts-ignore
       children: undefined,
       key: this.key - 1,
       depth: this.root ? NaN : 0,
@@ -123,17 +125,21 @@ export class Tree<D = any> {
    * @returns 返回找到的节点，没有找到时为 undefined
    */
   find(key: any, value: any): Node<D> {
-    let result;
+    let result: Node<D> | undefined;
     this.bfs(this.root, (node) => {
       if (node[key] === value) {
         result = node;
       }
     });
-    return result;
+    return result as Node<D>;
   }
 
   findByKey(key: number): Node<D> {
-    return this.nodes.find((node) => node.key === key);
+    const result = this.nodes.find((node) => node.key === key);
+    if (!result) {
+      throw new Error(`Can't find node by key ${key}`);
+    }
+    return result;
   }
 
   /**
@@ -164,7 +170,7 @@ export class Tree<D = any> {
       this.bfs(child, (node) => {
         if (node !== child) {
           this.nodes.push(node);
-          Object.assign(node, { depth: node.parent.depth + 1 });
+          Object.assign(node, { depth: node.parent!.depth + 1 });
         }
       });
     }
@@ -189,13 +195,13 @@ export class Tree<D = any> {
       return removedRoot;
     }
     const { parent } = childNode;
-    parent.children.forEach((child, index) => {
+    parent!.children!.forEach((child, index) => {
       if (child.key === childKey) {
-        removedRoot = parent.children.splice(index, 1);
+        removedRoot = parent!.children!.splice(index, 1);
       }
     });
-    const removedKey = [];
-    this.bfs(removedRoot[0], (node) => {
+    const removedKey: number[] = [];
+    this.bfs(removedRoot![0], (node) => {
       removedKey.push(node.key);
     });
     this.nodes = this.nodes.filter((n) => !removedKey.includes(n.key));
@@ -246,7 +252,7 @@ export class Tree<D = any> {
         Object.assign(obj, { collapse });
       }
       if (children) {
-        const c = [];
+        const c: any[] = [];
         children.forEach((child) => {
           if (child.type === 'BUTTON') return;
           c.push(fn(child));
@@ -287,9 +293,9 @@ export class Tree<D = any> {
       collapsible,
       rootPreserveData,
     );
-    const init = (parentKey, initData) => {
+    const init = (parentKey: number, initData: any) => {
       const { children } = initData;
-      children?.forEach((childData) => {
+      children?.forEach((childData: any) => {
         const isRelation = childData.hasOwnProperty('relation');
         let childNode = null;
         if (isRelation) {
@@ -304,7 +310,12 @@ export class Tree<D = any> {
         } else {
           const preserveData = _.omit(childData, fieldKeys);
           const fieldData = _.pick(childData, fieldKeys);
-          childNode = tree.createNode({ ...fieldData }, 'FIELD', childData.collapse, preserveData);
+          childNode = tree.createNode(
+            { ...fieldData },
+            'FIELD',
+            childData.collapse,
+            preserveData,
+          );
         }
         tree.appendByKey(parentKey, childNode);
         if (childData.children) {
@@ -325,7 +336,7 @@ export class Tree<D = any> {
     let maxLeft = 0;
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
-      if (!maxLeft || node.position?.x > maxLeft) {
+      if (node.position?.x && (!maxLeft || node.position?.x > maxLeft)) {
         maxLeft = node.position?.x;
       }
     }

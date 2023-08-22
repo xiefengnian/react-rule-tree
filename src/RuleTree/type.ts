@@ -68,14 +68,18 @@ export type Fields = {
   rules?: Rule[];
   initialValue?: any;
   /** render 请勿使用 ()=> (value,onChange)=> React.ReactNode; 的语法, 复杂组件请使用 ()=>\<YourComponent /\>; 进行封装。 */
-  render: (ctx: RenderContext, node: Node<any>, current: FieldCurrent) => React.ReactNode;
+  render: (
+    ctx: RenderContext,
+    node: Node<any>,
+    current: FieldCurrent,
+  ) => React.ReactNode;
 }[];
 
 export type CreateDragItem<D = any> = (props: {
   data: D;
   onDragEnd?: (data: D) => void;
   render: (data: D) => React.ReactElement;
-}) => void;
+}) => React.ReactElement;
 
 export type CanAndRuleProps = {
   depth: number;
@@ -95,10 +99,6 @@ export type FocusContext = {
 };
 
 export type RelationRenderProps = CanAndRuleProps & {
-  /**
-   * @deprecate 已废弃，请使用 `data`，包含自己和子节点的数据
-   */
-  selfData: Record<string, any>;
   data: Record<string, any>;
 };
 
@@ -109,7 +109,11 @@ export type RowConfig = {
   className?: string;
 };
 
-export type CurrentRow = { index: number; length: number; data: Record<any, any> };
+export type CurrentRow = {
+  index: number;
+  length: number;
+  data: Record<any, any>;
+};
 
 export type CurrentNode = {
   type: Relation | Field;
@@ -122,7 +126,9 @@ export type RuleTreeProps = {
   fields: Fields;
   style?: React.CSSProperties;
   disabled?: boolean;
-  relation: React.ReactElement | ((relationRenderProps: RelationRenderProps) => React.ReactElement);
+  relation:
+    | React.ReactElement
+    | ((relationRenderProps: RelationRenderProps) => React.ReactElement);
   relationWidth?: number;
   defaultRelationValue?: any;
   text?: {
@@ -146,7 +152,12 @@ export type RuleTreeProps = {
    * @deprecate 这个设置可以使用更通用的 modifyTreeNode 代替
    */
   relationRemovable?: boolean;
-  onFieldFocus?: (key: number, name: string, value: string, fieldsData: Record<any, any>) => void;
+  onFieldFocus?: (
+    key: number,
+    name: string,
+    value: string,
+    fieldsData: Record<any, any>,
+  ) => void;
   mode?: 'tree' | 'list';
   noDndProvider?: boolean;
   /**
@@ -160,14 +171,23 @@ export type RuleTreeProps = {
   actionsRender?: (
     currentNode: CurrentNode & { disabled: boolean },
     actions: {
-      remove: Function;
-      copy: Function;
+      remove: () => void;
+      copy: () => void;
     },
   ) => {
     remove?: React.ReactElement;
     copy?: React.ReactElement;
   };
-  onRemove?: (type: Relation | Field, namePath: string[], data: Record<any, any>) => boolean;
-  onFieldChange?: (name: string, newValue: any, oldValue: any, node: Node<any>) => void;
+  onRemove?: (
+    type: Relation | Field,
+    namePath: string[],
+    data: Record<any, any>,
+  ) => boolean;
+  onFieldChange?: (
+    name: string,
+    newValue: any,
+    oldValue: any,
+    node: Node<any>,
+  ) => void;
   shouldRemoveRelation?: (node: Node<any>) => boolean;
 };

@@ -44,10 +44,10 @@ export default () => {
           form={form}
           onFinish={async () => {
             try {
-              await ruleTreeRef.current.validate();
+              await ruleTreeRef.current?.validate();
             } catch (error) {
               console.log(error);
-              ruleTreeRef.current.reRender();
+              ruleTreeRef.current?.reRender();
             }
           }}
           onValuesChange={(changeValues, values) => {
@@ -76,11 +76,12 @@ export default () => {
                   ],
                   initialValue: '',
                   render: (ctx) => {
-                    const errorStyle: CSSProperties | false =
-                      ctx.getFieldError().length && {
-                        borderColor: 'red',
-                        outline: 'none',
-                      };
+                    const errorStyle: CSSProperties = ctx.getFieldError().length
+                      ? {
+                          borderColor: 'red',
+                          outline: 'none',
+                        }
+                      : {};
                     // 受 React 更新策略的限制，非顶级 Input 需要封装为组件
                     return (
                       <TooltipInput

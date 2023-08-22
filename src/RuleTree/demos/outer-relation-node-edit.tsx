@@ -42,8 +42,8 @@ interface ItemProps {
 }
 
 // 获取配置初始化数据,适配EditableTree
-const getInitConfigTreeData = (initData) => {
-  return initData?.map((v) => {
+const getInitConfigTreeData = (initData: any) => {
+  return initData?.map((v: any) => {
     const { name, section, family, children } = v;
     const item: ItemProps = {};
     if (children && children.length) {
@@ -54,7 +54,7 @@ const getInitConfigTreeData = (initData) => {
   });
 };
 
-const Node = (props) => {
+const Node = (props: any) => {
   const { value, onChange } = props;
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
@@ -124,7 +124,7 @@ const Node = (props) => {
   );
 };
 
-const RelationNode = (props) => {
+const RelationNode: React.FC<{ value?: any; onChange?: any }> = (props) => {
   const { value, onChange } = props;
   return (
     <div className="relation-node" style={{ whiteSpace: 'nowrap' }}>
@@ -146,7 +146,7 @@ export default function OuterRelationNodeEdit() {
   const [ruleValue, setRuleValue] = useState(initData);
 
   // 从数组指定位置递归删除某一项元素
-  const deleteDataByPath = (childrenOrigin, path) => {
+  const deleteDataByPath = (childrenOrigin: any, path: any) => {
     const originData = _.cloneDeep(childrenOrigin);
     if (path && path.length === 1) {
       return _.remove(originData, (data, index) => {
@@ -161,14 +161,14 @@ export default function OuterRelationNodeEdit() {
   };
 
   // 删除节点数据确认
-  const removeDataConfirm = async (currentNode) => {
+  const removeDataConfirm = async (currentNode: any) => {
     const { children: childrenOrigin = [] } = ruleValue || {};
     const { namePath } = currentNode;
     const newChildren = deleteDataByPath(childrenOrigin, namePath);
     setRuleValue({ ...initData, children: newChildren });
   };
 
-  const actionsRender = (currentNode) => ({
+  const actionsRender = (currentNode: any) => ({
     remove: (
       <Space size={6}>
         <Popconfirm

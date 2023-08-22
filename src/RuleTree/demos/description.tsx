@@ -25,7 +25,7 @@ export default () => {
         <Form
           form={form}
           onFinish={() => {
-            ruleTreeRef.current.validate();
+            ruleTreeRef.current?.validate();
           }}
           onValuesChange={(changeValues, values) => {
             console.log(values);

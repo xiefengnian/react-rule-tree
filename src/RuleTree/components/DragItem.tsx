@@ -1,21 +1,28 @@
+import cx from 'classnames';
 import _ from 'lodash';
 import React from 'react';
 import { useDrag } from 'react-dnd';
 import { Space } from '../components/compatible/Space';
 import { TYPE } from '../contants';
 import type { RowConfig } from '../type';
-import cx from 'classnames';
 
 export interface DragItemProps {
   thisKey: number;
-  onMove: (fromKey: number, toKey: number, order: number, originOrder: number) => void;
+  onMove: (
+    fromKey: number,
+    toKey: number,
+    order: number,
+    originOrder: number,
+  ) => void;
   namePath: string[];
   disabled?: boolean;
   rowConfig: RowConfig;
   currentIndex: number;
 }
 
-export const DragItem: React.FC<DragItemProps & { dragger: React.ReactNode }> = ({
+export const DragItem: React.FC<
+  DragItemProps & { dragger: React.ReactNode; children: any }
+> = ({
   children,
   disabled,
   thisKey,
@@ -54,7 +61,10 @@ export const DragItem: React.FC<DragItemProps & { dragger: React.ReactNode }> = 
       }}
       data-thiskey={thisKey}
     >
-      <div className={cx(rowConfig.className)} style={{ padding: '0px 8px', borderRadius: 3 }}>
+      <div
+        className={cx(rowConfig.className)}
+        style={{ padding: '0px 8px', borderRadius: 3 }}
+      >
         <Space>
           {rowConfig.draggable && <div ref={drag}>{dragger}</div>}
           <>{children}</>
@@ -70,7 +80,12 @@ type PureDragItemProps = {
   disabled?: boolean;
 };
 
-export const PureDragItem: React.FC<PureDragItemProps> = ({ data, onDrop, disabled, children }) => {
+export const PureDragItem: React.FC<PureDragItemProps & { children: any }> = ({
+  data,
+  onDrop,
+  disabled,
+  children,
+}) => {
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
     type: TYPE,
     item: { data, from: 'external' },
@@ -81,7 +96,7 @@ export const PureDragItem: React.FC<PureDragItemProps> = ({ data, onDrop, disabl
       const result: {
         parentKey: number;
         order: number;
-      } = monitor.getDropResult();
+      } = monitor.getDropResult()!;
       if (result) {
         onDrop(_.cloneDeep(item.data), result.parentKey, result.order);
       }

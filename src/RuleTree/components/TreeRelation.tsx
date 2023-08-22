@@ -3,9 +3,9 @@ import { Field } from 'rc-field-form';
 import React from 'react';
 import { BUTTON } from '../contants';
 import type { Node, RowConfig, RuleTreeProps } from '../type';
-import { Space } from './compatible/Space';
 import type { DragItemProps } from './DragItem';
 import { DragItem } from './DragItem';
+import { Space } from './compatible/Space';
 
 export type TreeRelationProps = {
   child: Node<any>;
@@ -23,6 +23,7 @@ export const TreeRelation: React.FC<TreeRelationProps & DragItemProps> = ({
   relation,
   disabled,
   onRemoveRelation,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   relationRemovable,
   getChildrenData,
   rowConfig,
@@ -80,9 +81,11 @@ export const TreeRelation: React.FC<TreeRelationProps & DragItemProps> = ({
                     depth: child.depth,
                     parent: child.parent.data,
                     brothers: child.parent.children
-                      .filter((_child) => _child.type !== BUTTON && _child.key !== child.key)
+                      .filter(
+                        (_child) =>
+                          _child.type !== BUTTON && _child.key !== child.key,
+                      )
                       .map((_child) => ({ ..._child.data })),
-                    selfData: child.data,
                     data: getChildrenData(child),
                   })
                 : relation;

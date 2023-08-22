@@ -1,4 +1,5 @@
 import { Input, Select } from 'antd';
+import React from 'react';
 import RuleTree from 'react-rule-tree';
 
 export default () => {

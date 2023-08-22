@@ -1,11 +1,11 @@
-import React from 'react';
-import Tooltip from 'rc-tooltip';
-import { BUTTON, BUTTON_HEIGHT, BUTTON_WIDTH, WIDTH } from '../contants';
-import type { RuleTreeProps } from '../type';
-import { createStyle } from '../utils';
 import { PlusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import cx from 'classnames';
+import Tooltip from 'rc-tooltip';
 import 'rc-tooltip/assets/bootstrap.css';
+import React from 'react';
+import { BUTTON, BUTTON_HEIGHT, BUTTON_WIDTH, WIDTH } from '../contants';
+import type { NodeType, RuleTreeProps } from '../type';
+import { createStyle } from '../utils';
 
 type ButtonGroupProps = {
   key: any;
@@ -18,7 +18,7 @@ type ButtonGroupProps = {
   text: RuleTreeProps['text'];
   canAddRuleDisabled: boolean;
   canAddRuleGroupDisabled: boolean;
-  handleAdd: Function;
+  handleAdd: (key: number, type: NodeType) => void;
   hideAddButton: boolean;
   hideAddGroupButton: boolean;
   className?: string;
@@ -58,7 +58,9 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = ({
                 cursor: canAddRuleDisabled ? 'not-allowed' : 'pointer',
               }}
               className={`${prefixCls}-button-left`}
-              onClick={() => !canAddRuleDisabled && handleAdd(parentKey, 'FIELD')}
+              onClick={() =>
+                !canAddRuleDisabled && handleAdd(parentKey, 'FIELD')
+              }
             >
               <PlusOutlined
                 style={{
@@ -81,7 +83,9 @@ export const ButtonGroup: React.FC<ButtonGroupProps> = ({
               className={cx(`${prefixCls}-button-right`, {
                 [`no-border`]: hideAddButton,
               })}
-              onClick={() => !canAddRuleGroupDisabled && handleAdd(parentKey, 'RELATION')}
+              onClick={() =>
+                !canAddRuleGroupDisabled && handleAdd(parentKey, 'RELATION')
+              }
             >
               <PlusCircleOutlined
                 style={{

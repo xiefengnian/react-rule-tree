@@ -126,7 +126,7 @@ export default () => {
           </FormList>
         </Form>
       </div>
-      <button onClick={() => actionRef.current.reRender()}>re render</button>
+      <button onClick={() => actionRef.current!.reRender()}>re render</button>
       <ProField
         fieldProps={{
           style: {

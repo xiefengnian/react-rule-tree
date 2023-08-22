@@ -7,6 +7,7 @@ interface Props {
   parentKey: number;
   order: number;
   namePath: string[];
+  children?: any;
 }
 
 export const DropPlacement: React.FC<Props> = ({
@@ -35,7 +36,11 @@ export const DropPlacement: React.FC<Props> = ({
       }) => {
         const { from } = item;
         if (from === 'internal') {
-          if (namePath && item.namePath && namePath.join('.').startsWith(item.namePath.join('.'))) {
+          if (
+            namePath &&
+            item.namePath &&
+            namePath.join('.').startsWith(item.namePath.join('.'))
+          ) {
             return false;
           }
           if (relatedKeys.includes(item.thisKey)) {

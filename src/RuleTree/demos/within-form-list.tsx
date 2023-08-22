@@ -23,18 +23,16 @@ export default () => {
         >
           <FormList name={'form-list'} initialValue={[value]}>
             {(fields, { add }) => {
-              console.log(fields);
               return (
                 <>
                   {fields.map((field) => {
-                    console.log(fields);
                     return (
-                      <Form.Item {...field}>
+                      <Form.Item {...field} key={field.key}>
                         <RuleTree
                           fields={[
                             {
                               name: 'test',
-                              render(ctx, node, current) {
+                              render() {
                                 return <Input />;
                               },
                             },

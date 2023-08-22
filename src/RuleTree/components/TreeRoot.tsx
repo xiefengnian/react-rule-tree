@@ -1,10 +1,10 @@
+import cx from 'classnames';
 import { Field } from 'rc-field-form';
 import React from 'react';
 import { RELATION_HEIGHT } from '../contants';
 import type { Node, RowConfig, RuleTreeProps } from '../type';
 import { createStyle } from '../utils';
 import type { TreeRelationProps } from './TreeRelation';
-import cx from 'classnames';
 
 type TreeRootProps = {
   prefixCls: string;
@@ -32,10 +32,10 @@ export const TreeRoot: React.FC<TreeRootProps> = ({
   return (
     <div
       className={cx(`${prefixCls}-node-root`, rowConfig.className, {
-        [className]: className,
+        [className!]: className,
       })}
       style={{
-        ...createStyle(node.position.x, node.position.y),
+        ...createStyle(node.position!.x, node.position!.y),
         ...{
           width: relationWidth,
           height: RELATION_HEIGHT,
@@ -51,7 +51,7 @@ export const TreeRoot: React.FC<TreeRootProps> = ({
       <Field
         name={['relation']}
         initialValue={node.data.relation}
-        shouldUpdate={(prevValues, curValues) => {
+        shouldUpdate={(prevValues: any, curValues: any) => {
           const namePath = 'relation';
           return prevValues[namePath] !== curValues[namePath];
         }}
@@ -61,7 +61,9 @@ export const TreeRoot: React.FC<TreeRootProps> = ({
             typeof relation === 'function'
               ? relation({
                   depth: node.depth,
+                  // @ts-ignore
                   parent: null,
+                  // @ts-ignore
                   brothers: null,
                   selfData: node.data,
                   data: getChildrenData(node),

@@ -40,7 +40,7 @@ import { createStyle, flatObject } from './utils';
 export const prefixCls = 'techui-rule-tree';
 
 const RuleTree: React.FC<
-  RuleTreeProps & { onChange?: (value) => void; value?: any; id?: string }
+  RuleTreeProps & { onChange?: (value: any) => void; value?: any; id?: string }
 > = ({
   value: propsValue,
   onChange: propsOnChange,
@@ -76,7 +76,9 @@ const RuleTree: React.FC<
   shouldRemoveRelation,
 }) => {
   const relationWidth =
-    userRelationWidth + (relationRemovable && !disabled ? 20 : 0) - (disabled ? 20 : 0);
+    userRelationWidth +
+    (relationRemovable && !disabled ? 20 : 0) -
+    (disabled ? 20 : 0);
 
   const [value, onChange] = useMergedState(defaultValue, {
     value: propsValue,
@@ -91,7 +93,7 @@ const RuleTree: React.FC<
 
   const update = () => _setKey((_key) => _key + 1);
 
-  const setTree = (treeInstance) => {
+  const setTree = (treeInstance: Tree) => {
     tree.current = treeInstance;
     update();
   };
@@ -109,7 +111,9 @@ const RuleTree: React.FC<
   const handleAdd = (key: number, type: NodeType) => {
     const fieldInitialValue = createInitialValue();
     const node = tree.current?.createNode(
-      type === 'RELATION' ? { relation: defaultRelationValue } : fieldInitialValue,
+      type === 'RELATION'
+        ? { relation: defaultRelationValue }
+        : fieldInitialValue,
       type,
     );
     tree.current?.appendByKey(key, node);
@@ -120,7 +124,7 @@ const RuleTree: React.FC<
     onChange?.(getPureData());
   };
 
-  const handleExternalDrop = (data, parentKey, order) => {
+  const handleExternalDrop = (data: any, parentKey: number, order: number) => {
     const parent = tree.current?.find('key', parentKey);
     if (parent) {
       const fieldInitialValue = data || createInitialValue();
@@ -130,7 +134,7 @@ const RuleTree: React.FC<
     }
   };
 
-  const resetFields = (newValue) => {
+  const resetFields = (newValue: any) => {
     const flattenValue = flatObject(newValue);
     Object.keys(flattenValue).forEach((flattenKey) => {
       const name = flattenKey.split('.').filter((k) => k !== 'children');
@@ -139,7 +143,7 @@ const RuleTree: React.FC<
       }
       let namePath = name;
       if (name.length > 2) {
-        namePath = [name.slice(0, -1).join('.')].concat(_.last(name));
+        namePath = [name.slice(0, -1).join('.')].concat(_.last(name)!);
       }
       form.setFields([
         {
@@ -182,11 +186,15 @@ const RuleTree: React.FC<
     form.validateFields();
   }, []);
 
-  const handleRemove = (key) => {
+  const handleRemove = (key: number) => {
     const node = tree.current?.find('key', key);
 
     if (onRemove) {
-      const shouldRemove = onRemove(node.type as Relation | Field, node.namePath, node.data);
+      const shouldRemove = onRemove(
+        node.type as Relation | Field,
+        node.namePath,
+        node.data,
+      );
       if (!shouldRemove) return;
     }
 
@@ -208,7 +216,7 @@ const RuleTree: React.FC<
     onChange?.(getPureData());
   };
 
-  const handleCopy = (key) => {
+  const handleCopy = (key: number) => {
     const node = tree.current?.find('key', key);
     if (node) {
       const { data, parent } = node;
@@ -218,7 +226,12 @@ const RuleTree: React.FC<
     }
   };
 
-  const onMove = (fromKey, toKey, order, originOrder) => {
+  const onMove = (
+    fromKey: number,
+    toKey: number,
+    order: number,
+    originOrder: number,
+  ) => {
     const fromNode = tree.current?.find('key', fromKey);
     const parentNode = fromNode.parent;
     const toNode = tree.current?.find('key', toKey);
@@ -248,7 +261,7 @@ const RuleTree: React.FC<
   const render = () => {
     const result = [];
     const paths: React.ReactElement[] = [];
-    let height;
+    let height: number = 0;
     /** render方法接受一系列的渲染函数，树结构将会连续调用这些渲染函数，形成流水线式的处理方法 */
     tree.current?.render(
       {
@@ -257,7 +270,9 @@ const RuleTree: React.FC<
           /**
            * 为原始数据增加添加按钮节点，并且在数据更新后调整按钮的位置
            */
-          const lagencyButton = node.children?.filter((n) => n.type === BUTTON)[0];
+          const lagencyButton = node.children?.filter(
+            (n) => n.type === BUTTON,
+          )[0];
           if (lagencyButton) {
             /** 在拖拽后，先把旧的按钮删除，创造新的按钮 */
             tree.current?.removeByKey(lagencyButton.key);
@@ -331,25 +346,30 @@ const RuleTree: React.FC<
             if (!children) {
               return;
             }
-            const allHeight = children.reduce((prev, current) => prev + current.height, 0);
+            const allHeight = children.reduce(
+              (prev, current) => prev + current.height,
+              0,
+            );
             children.forEach((child, index) => {
               let y;
               /** 不要尝试搞懂这两个数值计算，我写完就忘了是什么意思，也许这就是灵光乍现吧 */
               if (index > 0) {
                 const prevChild = children[index - 1];
                 y =
-                  /** 上一个兄弟节点的y位置 */ prevChild.position.y +
+                  /** 上一个兄弟节点的y位置 */ prevChild.position!.y +
                   /** 上一个兄弟节点高度 / 2 */ prevChild.height / 2 +
                   /** 自身高度 / 2 */ child.height / 2;
               } else {
                 y =
-                  /** 相对父节点位置的偏移  */ node.position.y -
+                  /** 相对父节点位置的偏移  */ node.position!.y -
                   (allHeight - FIELD_BOX_HEIGHT) / 2 +
-                  /** 自身高度带来的位置偏移 */ (child.height - FIELD_BOX_HEIGHT) / 2;
+                  /** 自身高度带来的位置偏移 */ (child.height -
+                    FIELD_BOX_HEIGHT) /
+                    2;
               }
               Object.assign(child, {
                 position: {
-                  x: node.position.x + relationWidth + BETWEEN_X,
+                  x: node.position!.x + relationWidth + BETWEEN_X,
                   y,
                 },
               });
@@ -367,12 +387,12 @@ const RuleTree: React.FC<
           if (tree.current?.isRoot(node)) {
             const { children } = node;
             if (children?.length > 1) {
-              const firstChild = _.first(children);
-              const lastChild = _.last(children);
+              const firstChild = _.first(children)!;
+              const lastChild = _.last(children)!;
               Object.assign(node, {
                 position: {
                   x: 0,
-                  y: (firstChild.position.y + lastChild.position.y) / 2,
+                  y: (firstChild.position!.y + lastChild.position!.y) / 2,
                 },
               });
             }
@@ -419,7 +439,7 @@ const RuleTree: React.FC<
                 prefixCls={prefixCls}
                 relationWidth={relationWidth}
                 relation={relation}
-                disabled={disabled}
+                disabled={Boolean(disabled)}
                 getChildrenData={() => tree.current.getPureData()}
                 className={`${prefixCls}-${node.type.toLowerCase()}`}
               />,
@@ -430,8 +450,8 @@ const RuleTree: React.FC<
 
           if (children) {
             children.forEach((child, index) => {
-              const { position, type, collapse } = child;
-              const { x, y } = position;
+              const { type, collapse } = child;
+              const { x, y } = child.position!;
               if (type === BUTTON) {
                 /** 渲染按钮组 button render */
                 const canAndRuleProps: CanAndRuleProps = {
@@ -449,16 +469,19 @@ const RuleTree: React.FC<
                   ? canAddRule(_.cloneDeep(canAndRuleProps))
                   : true;
 
-                const canAddRuleGroupDisabled = disabled || !canAddRuleGroupResult;
+                const canAddRuleGroupDisabled =
+                  disabled || !canAddRuleGroupResult;
                 const canAddRuleDisabled = disabled || !canAddRuleResult;
                 result.push(
                   <ButtonGroup
                     hide={selfCollapse}
                     hideAddButton={canAddRuleResult === 'hide'}
-                    hideAddGroupButton={canAddRuleGroupResult === 'hide' || mode === 'list'}
+                    hideAddGroupButton={
+                      canAddRuleGroupResult === 'hide' || mode === 'list'
+                    }
                     canAddRuleDisabled={canAddRuleDisabled}
                     canAddRuleGroupDisabled={canAddRuleGroupDisabled}
-                    position={child.position}
+                    position={child.position!}
                     text={text}
                     key={child.key}
                     parentKey={node.key}
@@ -475,8 +498,8 @@ const RuleTree: React.FC<
                     x={x}
                     y={
                       index
-                        ? children[index - 1].position.y +
-                          (y - children[index - 1].position.y) / 2 +
+                        ? children[index - 1].position!.y +
+                          (y - children[index - 1].position!.y) / 2 +
                           PLACEMENT_HEIGHT / 2
                         : y - PLACEMENT_HEIGHT
                     }
@@ -487,7 +510,11 @@ const RuleTree: React.FC<
                       namePath={child.namePath}
                       relatedKeys={
                         index > 0
-                          ? [child.key, node.parent?.key, children[index - 1].key]
+                          ? [
+                              child.key,
+                              node.parent?.key,
+                              children[index - 1].key,
+                            ]
                           : [child.key, node.parent?.key]
                       }
                     />
@@ -505,7 +532,8 @@ const RuleTree: React.FC<
                     ...currentRowConfig,
                     ...modifyRow({
                       index: index,
-                      length: children.filter((c) => c.type !== 'BUTTON').length,
+                      length: children.filter((c) => c.type !== 'BUTTON')
+                        .length,
                       data: child.data,
                     }),
                   };
@@ -542,7 +570,7 @@ const RuleTree: React.FC<
                     data-height={child.height}
                     key={child.key.toString()}
                     style={{
-                      ...createStyle(child.position.x, child.position.y),
+                      ...createStyle(child.position!.x, child.position!.y),
                       ...{
                         width: type === FIELD ? 'auto' : relationWidth,
                         height: HEIGHT[type],
@@ -561,14 +589,16 @@ const RuleTree: React.FC<
                           key={`r-${child.namePath.join(',')}`}
                           child={child}
                           relation={relation}
-                          disabled={disabled}
+                          disabled={Boolean(disabled)}
                           onMove={onMove}
                           thisKey={child.key}
                           namePath={child.namePath}
                           rowConfig={currentRowConfig}
                           onRemoveRelation={handleRemove}
-                          relationRemovable={relationRemovable}
-                          getChildrenData={(startNode) => tree.current.getChildrenData(startNode)}
+                          relationRemovable={Boolean(relationRemovable)}
+                          getChildrenData={(startNode) =>
+                            tree.current.getChildrenData(startNode)
+                          }
                           currentIndex={index}
                           actionsRender={actionsRender}
                         />
@@ -581,7 +611,7 @@ const RuleTree: React.FC<
                           copyable={copyable}
                           child={child}
                           form={form}
-                          disabled={disabled}
+                          disabled={Boolean(disabled)}
                           handleCopy={handleCopy}
                           handleRemove={handleRemove}
                           onMove={onMove}
@@ -591,7 +621,10 @@ const RuleTree: React.FC<
                           onNodeFocus={onNodeFocus}
                           onFieldFocus={onFieldFocus}
                           currentIndex={index}
-                          length={children.filter((item) => item.type !== 'BUTTON').length}
+                          length={
+                            children.filter((item) => item.type !== 'BUTTON')
+                              .length
+                          }
                           actionsRender={actionsRender}
                           onFieldChange={onFieldChange}
                         />
@@ -605,7 +638,9 @@ const RuleTree: React.FC<
                     <Placement
                       key={`ep${child.key}`}
                       x={x}
-                      y={y + FIELD_HEIGHT + BETWEEN_Y / 2 - PLACEMENT_HEIGHT / 2}
+                      y={
+                        y + FIELD_HEIGHT + BETWEEN_Y / 2 - PLACEMENT_HEIGHT / 2
+                      }
                       hide={selfCollapse}
                     >
                       <DropPlacement
@@ -632,13 +667,12 @@ const RuleTree: React.FC<
             if (node.type === RELATION) {
               // 如果 hideButton 且 children 为空时会导致错误
               const { children, key } = node;
-              const { x: fromX, y: fromY } = node.position;
+              const { x: fromX, y: fromY } = node.position!;
               if (children?.length && !tree.current.shouldCollapse(key)) {
                 children.forEach((child) => {
-                  const {
-                    position: { x, y },
-                    type,
-                  } = child;
+                  const { type } = child;
+
+                  const { x, y } = child.position!;
                   /** 连接到每个子节点的线 */
                   paths.push(
                     <SVGLine
@@ -659,14 +693,11 @@ const RuleTree: React.FC<
               if (children?.length) {
                 children.forEach((child, index) => {
                   if (index === children.length - 1) return;
-                  const {
-                    position: { x, y },
-                    type,
-                  } = child;
+                  const { type } = child;
 
-                  const {
-                    position: { y: toY },
-                  } = children[index + 1];
+                  const { x, y } = child.position!;
+
+                  const { y: toY } = children[index + 1].position!;
 
                   /** 连接到每个子节点的线 */
                   paths.push(
@@ -716,7 +747,7 @@ const RuleTree: React.FC<
         <Form
           component="div"
           form={form}
-          onValuesChange={_.debounce((changeValues, values) => {
+          onValuesChange={_.debounce((changeValues) => {
             /** 因为 antd5 的 bug，该表单无法获得 values，改为 changeValues 赋值 */
 
             const currentData = cloneDeep(getPureData());
@@ -731,7 +762,7 @@ const RuleTree: React.FC<
                   ? fieldPath
                   : fieldPath
                       .split('.')
-                      .reduce((memo, current) => {
+                      .reduce((memo: string[], current) => {
                         return [...memo, 'children', current];
                       }, [])
                       .join('.');
@@ -759,25 +790,29 @@ const RuleTree: React.FC<
               flexDirection: 'column',
             }}
           >
-            {description && <div className={`${prefixCls}-desc`}>{description}</div>}
+            {description && (
+              <div className={`${prefixCls}-desc`}>{description}</div>
+            )}
             {render()}
           </div>
           {extraDragItemRender &&
-            extraDragItemRender(({ data, onDragEnd, render: renderFunction }) => (
-              <PureDragItem
-                data={data}
-                disabled={disabled}
-                key={JSON.stringify(data)}
-                onDrop={(_data, parentKey, order) => {
-                  if (onDragEnd) {
-                    onDragEnd(_data);
-                  }
-                  handleExternalDrop(_data, parentKey, order);
-                }}
-              >
-                {renderFunction(data)}
-              </PureDragItem>
-            ))}
+            extraDragItemRender(
+              ({ data, onDragEnd, render: renderFunction }) => (
+                <PureDragItem
+                  data={data}
+                  disabled={disabled}
+                  key={JSON.stringify(data)}
+                  onDrop={(_data, parentKey, order) => {
+                    if (onDragEnd) {
+                      onDragEnd(_data);
+                    }
+                    handleExternalDrop(_data, parentKey, order);
+                  }}
+                >
+                  {renderFunction(data)}
+                </PureDragItem>
+              ),
+            )}
         </Form>
       </Provider>
     </div>

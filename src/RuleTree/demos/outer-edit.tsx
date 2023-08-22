@@ -71,11 +71,12 @@ export default () => {
                   ],
                   initialValue: '',
                   render: (ctx) => {
-                    const errorStyle: CSSProperties | false =
-                      ctx.getFieldError().length && {
-                        borderColor: 'red',
-                        outline: 'none',
-                      };
+                    const errorStyle: CSSProperties = ctx.getFieldError().length
+                      ? {
+                          borderColor: 'red',
+                          outline: 'none',
+                        }
+                      : {};
                     return <FieldToolTip errorStyle={errorStyle} ctx={ctx} />;
                   },
                 },
@@ -110,7 +111,7 @@ export default () => {
           visible={visible}
           onOk={() => {
             anotherForm.validateFields().then((values) => {
-              ruleTreeRef.current.setData(key, values);
+              ruleTreeRef.current?.setData(key!, values);
               setVisible(false);
             });
           }}

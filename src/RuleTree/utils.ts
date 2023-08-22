@@ -9,18 +9,23 @@ export const createStyle = (x: number, y: number): React.CSSProperties => {
 };
 
 export const flatObject = (obj: Record<any, any>) => {
-  const result = {};
+  const result: Record<string, any> = {};
   const fn = (item: Record<any, any>, parentKey: string) => {
     if (item.relation !== undefined) {
       result[(parentKey ? `${parentKey}.` : '') + 'relation'] = item.relation;
-      item.children?.forEach((arrayItem, index) => {
-        fn(arrayItem, (parentKey ? `${parentKey}.` : '') + 'children' + '.' + index);
+      item.children?.forEach((arrayItem: any, index: number) => {
+        fn(
+          arrayItem,
+          (parentKey ? `${parentKey}.` : '') + 'children' + '.' + index,
+        );
       });
     } else {
       for (const key in item) {
-        const val = item[key];
-        result[(parentKey ? `${parentKey}.` : '') + key] =
-          typeof val === 'object' ? _.cloneDeep(val) : val;
+        if (item.hasOwnProperty(key)) {
+          const val = item[key];
+          result[(parentKey ? `${parentKey}.` : '') + key] =
+            typeof val === 'object' ? _.cloneDeep(val) : val;
+        }
       }
     }
   };

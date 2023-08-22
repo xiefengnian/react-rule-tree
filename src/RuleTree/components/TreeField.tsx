@@ -4,10 +4,16 @@ import type { FormInstance } from 'rc-field-form';
 import { Field } from 'rc-field-form';
 import React from 'react';
 import { prefixCls } from '..';
-import type { FocusContext, Node, RenderContext, RowConfig, RuleTreeProps } from '../type';
-import { Space } from './compatible/Space';
+import type {
+  FocusContext,
+  Node,
+  RenderContext,
+  RowConfig,
+  RuleTreeProps,
+} from '../type';
 import type { DragItemProps } from './DragItem';
 import { DragItem } from './DragItem';
+import { Space } from './compatible/Space';
 
 type TreeFieldProps = Pick<
   RuleTreeProps,
@@ -22,8 +28,8 @@ type TreeFieldProps = Pick<
   child: Node<any>;
   form: FormInstance;
   disabled: boolean;
-  handleCopy: Function;
-  handleRemove: Function;
+  handleCopy: (key: any) => void;
+  handleRemove: (key: any) => void;
   length: number;
   rowConfig: RowConfig;
   actionsRender: RuleTreeProps['actionsRender'];
@@ -33,6 +39,7 @@ export const TreeField: React.FC<TreeFieldProps & DragItemProps> = ({
   fields,
   onCascade,
   cascades,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   copyable,
   child,
   form,
@@ -48,7 +55,8 @@ export const TreeField: React.FC<TreeFieldProps & DragItemProps> = ({
 }) => {
   const { currentIndex, rowConfig } = dragItemProps;
 
-  const hasAllow = Object.keys(rowConfig).filter((key) => rowConfig[key]).length > 0;
+  const hasAllow =
+    Object.keys(rowConfig).filter((key) => (rowConfig as any)[key]).length > 0;
 
   const onCopy = () => {
     if (!disabled) {
@@ -81,20 +89,21 @@ export const TreeField: React.FC<TreeFieldProps & DragItemProps> = ({
   );
 
   if (actionsRender) {
-    const { remove: customRemoveElement, copy: customCopyElement } = actionsRender(
-      {
-        // @ts-ignore
-        type: child.type,
-        namePath: child.namePath,
-        isRoot: !child.parent,
-        data: child.data,
-        disabled,
-      },
-      {
-        remove: onRemove,
-        copy: onCopy,
-      },
-    );
+    const { remove: customRemoveElement, copy: customCopyElement } =
+      actionsRender(
+        {
+          // @ts-ignore
+          type: child.type,
+          namePath: child.namePath,
+          isRoot: !child.parent,
+          data: child.data,
+          disabled,
+        },
+        {
+          remove: onRemove,
+          copy: onCopy,
+        },
+      );
     if (customRemoveElement) {
       removeElement = customRemoveElement;
     }
@@ -134,7 +143,9 @@ export const TreeField: React.FC<TreeFieldProps & DragItemProps> = ({
                 const namePath = [child.namePath.join('.')].concat(name);
                 const context: RenderContext = {
                   getFieldValue: (ctxName: string) => {
-                    return form.getFieldValue([child.namePath.join('.')].concat(ctxName));
+                    return form.getFieldValue(
+                      [child.namePath.join('.')].concat(ctxName),
+                    );
                   },
                   getFieldError: () => {
                     return form.getFieldError(namePath);
@@ -152,16 +163,13 @@ export const TreeField: React.FC<TreeFieldProps & DragItemProps> = ({
                   index: currentIndex,
                   length,
                 });
-
-                const isEmptyString = typeof component === 'string' && !component;
-                if (isEmptyString) {
-                  console.error(
-                    '请不要再使用空字符串表达该项不渲染，使用 false 代替. 该语法将在下一个 major 版本彻底移除支持！',
-                  );
-                }
-                const shouldNotRender = isEmptyString || component === false;
+                const shouldNotRender = component === false;
                 return (
-                  <div key={namePath.join('.')} data-namepath={namePath} style={{ minHeight: 32 }}>
+                  <div
+                    key={namePath.join('.')}
+                    data-namepath={namePath}
+                    style={{ minHeight: 32 }}
+                  >
                     <Field
                       name={namePath}
                       // 不渲染的field则不需要校验
@@ -177,14 +185,19 @@ export const TreeField: React.FC<TreeFieldProps & DragItemProps> = ({
                       __should_not_render__={shouldNotRender}
                     >
                       {(props) => {
-                        const cascadesOnChange = (_props) => {
+                        const cascadesOnChange = (_props: any) => {
                           const _propsValue =
                             // 有可能吐回 event 或者 value
                             typeof _props === 'object' && _props.target
                               ? _props.target.value
                               : _props;
 
-                          onFieldChange?.(name, _propsValue, child.data[name], child);
+                          onFieldChange?.(
+                            name,
+                            _propsValue,
+                            child.data[name],
+                            child,
+                          );
 
                           props.onChange?.(_props); // onChange 必须在前，否则 onCascade 的值会延迟一次 onChange
                           if (onCascade && cascades?.includes(name)) {
@@ -203,11 +216,19 @@ export const TreeField: React.FC<TreeFieldProps & DragItemProps> = ({
                         };
 
                         const onClick = () => {
-                          onFieldFocus?.(child.key, name, props.value, child.data);
+                          onFieldFocus?.(
+                            child.key,
+                            name,
+                            props.value,
+                            child.data,
+                          );
                         };
 
                         if (typeof component === 'function') {
-                          component = component(props.value, cascadesOnChange);
+                          component = (component as any)(
+                            props.value,
+                            cascadesOnChange,
+                          );
                           console.error(
                             '使用 render: ()=>(value,onChange)=>React.ReactElement 会导致渲染问题，复杂组件请使用：render : ()=> <YourComponent />',
                           );
@@ -216,17 +237,20 @@ export const TreeField: React.FC<TreeFieldProps & DragItemProps> = ({
                         if (React.isValidElement(component)) {
                           return (
                             <div onClick={onClick}>
-                              {React.cloneElement(component as React.ReactElement, {
-                                disabled,
-                                ...(component as React.ReactElement).props,
-                                ...(typeof component === 'function'
-                                  ? {}
-                                  : {
-                                      value: props.value,
-                                      onChange: cascadesOnChange,
-                                    }),
-                                key: `field-component-${namePath.join(',')}`,
-                              })}
+                              {React.cloneElement(
+                                component as React.ReactElement,
+                                {
+                                  disabled,
+                                  ...(component as React.ReactElement).props,
+                                  ...(typeof component === 'function'
+                                    ? {}
+                                    : {
+                                        value: props.value,
+                                        onChange: cascadesOnChange,
+                                      }),
+                                  key: `field-component-${namePath.join(',')}`,
+                                },
+                              )}
                             </div>
                           );
                         }

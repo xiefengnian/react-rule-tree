@@ -2,7 +2,10 @@ import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-export const Provider: React.FC<{ noDndProvider: boolean }> = ({ children, noDndProvider }) => {
+export const Provider: React.FC<{ noDndProvider: boolean; children: any }> = ({
+  children,
+  noDndProvider,
+}) => {
   return noDndProvider ? (
     <>{children}</>
   ) : (

@@ -1,27 +1,11 @@
 import ProCard from '@ant-design/pro-card';
 import ProField from '@ant-design/pro-field';
-import { Button, Checkbox, Form, Select, Space } from 'antd';
-import { useRef, useState } from 'react';
+import { Button, Form, Select, Space } from 'antd';
+import React, { useRef, useState } from 'react';
 import type { ActionType } from 'react-rule-tree';
 import RuleTree from 'react-rule-tree';
 
 const { useForm } = Form;
-
-const FiledCheckbox: React.FC<{ value?: any; onChange?: any }> = ({
-  value,
-  onChange,
-}) => {
-  return (
-    <Checkbox
-      checked={value}
-      onChange={(e) => {
-        onChange(e.target.checked);
-      }}
-    >
-      {value ? '开启' : '关闭'}
-    </Checkbox>
-  );
-};
 
 export default () => {
   const [form] = useForm();
@@ -42,7 +26,7 @@ export default () => {
         <Form
           form={form}
           onFinish={() => {
-            ruleTreeRef.current.validate();
+            ruleTreeRef.current?.validate();
           }}
           onValuesChange={(changeValues, values) => {
             console.log(values);

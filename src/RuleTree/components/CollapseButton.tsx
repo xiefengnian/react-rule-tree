@@ -1,12 +1,12 @@
-import React from 'react';
-import type { Node, RuleTreeProps } from '../type';
-import cx from 'classnames';
 import { MinusCircleFilled, PlusCircleFilled } from '@ant-design/icons';
+import cx from 'classnames';
+import React from 'react';
+import type { Node } from '../type';
 
 type CollapseButtonProps = {
   toggleCollapse: (thisKey: number) => void;
   child: Node<any>;
-  relationWidth: RuleTreeProps['relationWidth'];
+  relationWidth: number;
   collapse: boolean;
   hide: boolean;
 };
@@ -25,8 +25,8 @@ export const CollapseButton: React.FC<CollapseButtonProps> = ({
       }}
       style={{
         position: 'absolute',
-        left: child.position.x + relationWidth + 4,
-        top: child.position.y + 20 - 11,
+        left: child.position!.x + relationWidth + 4,
+        top: child.position!.y + 20 - 11,
         zIndex: 10,
         display: hide ? 'none' : undefined,
       }}

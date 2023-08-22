@@ -12,5 +12,6 @@
       "react-rule-tree/*": ["src/*", "*"]
     }
   },
+  "exclude": ["src/**/*.test.*"],
   "include": [".dumi/**/*", ".dumirc.ts", "src/**/*"]
 }
